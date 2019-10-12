@@ -4,6 +4,7 @@ Wurongyan Zhang
 10/7/2019
 
 ``` r
+#load the library and data
 library(tidyverse)
 library(ggridges)
 library(gridExtra)
@@ -36,6 +37,7 @@ There are 134 aisles in total and the most items are ordered from aisle
 “fresh vegetables” which has aisle id of 83.
 
 ``` r
+#rank the aisles and find the first of the rank
 insta = instacart %>% 
   group_by(aisle) %>% 
   count() %>% 
@@ -50,9 +52,11 @@ insta[which.max(pull(insta,n)),1]
     ## 1 fresh vegetables
 
 ``` r
+# filter the aisles with more than 10000 items
 more = insta %>% 
   filter(n>10000) 
 
+# make the ggplot of number of items ordered in each aisle with the data set above
 ggplot(more,aes(x=aisle, y=n))+
   geom_bar(stat = "identity",fill=6)+
   theme(axis.text.x = element_text(angle = 90, hjust = 0.9))+
@@ -66,6 +70,8 @@ in the aisles “fresh vegetables”, “fresh fruits” and “packaged vegetab
 fruits” are three aisles sold the most items.
 
 ``` r
+# filter those 3 aisles and get the three most popular items
+
 bake = instacart %>% 
   filter(aisle=="baking ingredients") %>% 
   group_by(product_name) %>% 
@@ -87,6 +93,7 @@ pak = instacart %>%
   arrange(desc(n))%>% 
   head(3)
 
+# join those 3 data sets and create a table
 all1= full_join(pak, dog)
 ```
 
@@ -103,30 +110,25 @@ aisle=c("packaged vegetables fruits","packaged vegetables fruits","packaged vege
 bind =
   as.data.frame(aisle)
 all3=as.data.frame(c(all, bind)) %>% 
-  select(aisle,everything())
-all3
+  select(aisle,everything()) 
+as.tibble(all3)
 ```
 
-    ##                        aisle                                  product_name
-    ## 1 packaged vegetables fruits                          Organic Baby Spinach
-    ## 2 packaged vegetables fruits                           Organic Raspberries
-    ## 3 packaged vegetables fruits                           Organic Blueberries
-    ## 4              dog food care Snack Sticks Chicken & Rice Recipe Dog Treats
-    ## 5              dog food care           Organix Chicken & Brown Rice Recipe
-    ## 6              dog food care                            Small Dog Biscuits
-    ## 7         baking ingredients                             Light Brown Sugar
-    ## 8         baking ingredients                              Pure Baking Soda
-    ## 9         baking ingredients                                    Cane Sugar
-    ##      n
-    ## 1 9784
-    ## 2 5546
-    ## 3 4966
-    ## 4   30
-    ## 5   28
-    ## 6   26
-    ## 7  499
-    ## 8  387
-    ## 9  336
+    ## Warning: `as.tibble()` is deprecated, use `as_tibble()` (but mind the new semantics).
+    ## This warning is displayed once per session.
+
+    ## # A tibble: 9 x 3
+    ##   aisle                     product_name                                  n
+    ##   <fct>                     <fct>                                     <int>
+    ## 1 packaged vegetables frui… Organic Baby Spinach                       9784
+    ## 2 packaged vegetables frui… Organic Raspberries                        5546
+    ## 3 packaged vegetables frui… Organic Blueberries                        4966
+    ## 4 dog food care             Snack Sticks Chicken & Rice Recipe Dog T…    30
+    ## 5 dog food care             Organix Chicken & Brown Rice Recipe          28
+    ## 6 dog food care             Small Dog Biscuits                           26
+    ## 7 baking ingredients        Light Brown Sugar                           499
+    ## 8 baking ingredients        Pure Baking Soda                            387
+    ## 9 baking ingredients        Cane Sugar                                  336
 
 Comment: for the aisle “baking ingredients”, the three most popular
 items are “Light Brown Sugar”, “Pure Baking Soda”, and “Cane Sugar”. For
@@ -135,10 +137,12 @@ Sticks Chicken & Rice Recipe Dog Treats”, “Organix Chicken & Brown Rice
 Recipe”, “Small Dog Biscuits”. This aisle has the least total items sold
 compared to the other two. For the aisle “packaged vegetables fruits”,
 the three most popular items are “Organic Baby Spinach”, “Organic
-Raspberries”,“Organic Blueberries”. This aisle has the most total items
-sold compared to the other two.
+Raspberries”, “Organic Blueberries”. This aisle has the most total items
+sold compared to the other
+two.
 
 ``` r
+# filter the data set with pink lady apples and the time ordered on each day of week
 pink = instacart %>% 
   filter(product_name %like% "Pink Lady Apples") %>% 
   group_by(order_dow) %>% 
@@ -147,11 +151,13 @@ pink = instacart %>%
 ```
 
 ``` r
+# filter the data set with coffee ice cream and the time ordered on each day of week
 coffee = instacart %>% 
   filter(product_name %like% "Coffee Ice Cream") %>% 
   group_by(order_dow) %>% 
   summarise(mean_hour = mean(order_hour_of_day) )%>% 
   mutate(name = "Coffee Ice Cream")
+#combine those two data sets and create the table
 com = rbind(pink,coffee)
 pivot_wider(com,id_cols = name, names_from = order_dow, values_from = mean_hour)
 ```
@@ -169,18 +175,23 @@ Comment: For pink lady apples, customers ordered mainly from 11:00 to
 # problem 2
 
 ``` r
+# load the data set
 data("brfss_smart2010")
 ```
 
 ``` r
+# clean the data set 
 overall= brfss_smart2010 %>% 
   janitor::clean_names() %>% 
+  # focus on overall health only
   filter(topic=="Overall Health")  %>% 
+  # organize responses in order
   mutate(response= factor(response,order=TRUE, levels = c("Excellent","Very good","Good","Fair","Poor"))) %>% 
   arrange(desc(response))
 ```
 
 ``` r
+# find the states that observed at 7 or more locations in 2002 and 2010
 loc= overall %>% 
   filter(year%in%c("2002","2010")) %>% 
   group_by(year,locationabbr) %>% 
@@ -224,9 +235,11 @@ in 2002. Also, there are total 14 states were observed at 7 or more
 locations in 2010.
 
 ``` r
+# construct the dataset with only excellent responses only 
 excellent = overall %>% 
   filter(response=="Excellent") %>% 
   group_by(year, locationabbr) %>% 
+  # include averages of data_value for each location
   summarise(mean(data_value)) %>% 
   `colnames<-`(c("year","state","mean_data_value"))  
   
@@ -245,6 +258,7 @@ head(excellent)
     ## 6  2002 CO               23.1
 
 ``` r
+# the spaghetti plot of average value vs year for each state
 ggplot(excellent,
        aes(x=year, y=mean_data_value, color=state))+
   geom_line()+
@@ -253,17 +267,20 @@ ggplot(excellent,
 
     ## Warning: Removed 3 rows containing missing values (geom_path).
 
-![](hw3_files/figure-gfm/unnamed-chunk-11-1.png)<!-- --> Comment: We can
-see that the average value over time within a state mainly range from 15
-to 30 and it does not fluctuate a lot within a state but there are some
-difference between different states. For WV in 2005, the average was
-extremely low compared to others.
+![](hw3_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+Comment: We can see that the average value over time within a state
+mainly range from 15 to 30 and it does not fluctuate a lot within a
+state but there are some difference between different states. For WV in
+2005, the average was extremely low compared to others.
 
 ``` r
+# filter data for NY in 2006 and 2010
 data_year=overall %>% 
   filter(locationabbr=="NY") %>%
   filter(year%in%c("2010","2006"))
 
+# make the two panel plot for the distribution of data_value for responses in NY
 plot_year=ggplot(data_year,aes(x=factor(response, levels = c("Excellent","Very good","Good","Fair","Poor")), y=data_value, color=locationdesc, group=locationdesc))+
   geom_line()+
   geom_point()+
@@ -272,11 +289,13 @@ plot_year=ggplot(data_year,aes(x=factor(response, levels = c("Excellent","Very g
 plot_year
 ```
 
-![](hw3_files/figure-gfm/unnamed-chunk-13-1.png)<!-- --> Comment: We can
-see that in year 2010 there are more locations evaluated in the state
-NY. In both years, “poor” has the lowest data value and “very good” has
-the highest in 2010 and “good” has the highest in 2006. This means the
-most of the responses are better than “good” in both years.
+![](hw3_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+Comment: We can see that in year 2010 there are more locations evaluated
+in the state NY. In both years, “poor” has the lowest data value and
+“very good” has the highest in 2010 and “good” has the highest in
+2006. This means the most of the responses are better than “good” in
+both years.
 
 ## problem 3
 
@@ -285,6 +304,7 @@ chf = read_csv("./data/accel_data.csv")
 ```
 
 ``` r
+# tidy the data set
 chf = 
   chf %>% 
   janitor::clean_names() %>% 
@@ -303,6 +323,7 @@ data. The “day” variable indicates the day of the week and the “days”
 variable indicates if it is weekdays or weekends.
 
 ``` r
+# create table showing total activity for each day
 chf %>% 
   group_by(week, day_id, day) %>% 
   summarise(total_activity=sum(activity_counts)) 
@@ -325,6 +346,7 @@ chf %>%
     ## # … with 25 more rows
 
 ``` r
+# make a plot to see the trend
 test= chf %>% 
   select(day_id, activity_counts,day) %>% 
   group_by(day_id) %>% 
@@ -334,22 +356,24 @@ test= chf %>%
 test
 ```
 
-![](hw3_files/figure-gfm/unnamed-chunk-17-1.png)<!-- --> From the plot
-we can see that there are few days(day 2, day 24 and day 31) have low
-total activities and most days the total activity times range from
-\[2\times10^5\ to\ 6\times10^5\]. There is no particular trend from my
-perspective.
+![](hw3_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+From the plot we can see that there are few days(day 2, day 24 and day
+31) have low total activities and most days the total activity times
+range from \[2\times10^5\ to\ 6\times10^5\]. There is no particular
+trend from my perspective.
 
 ``` r
+# make the plot showing 24-hour activity time courses for each day
 chf %>% 
   select(activity_minutes,day_id,day,activity_counts) %>% 
   ggplot(aes(x=activity_minutes, y=activity_counts, color=day))+
   scale_x_discrete(breaks=seq(60,1440,60), labels=as.character(c(1:24)))+
-  geom_point()+
+   geom_bar(stat="identity",position = "dodge")+
   labs(x="activity hours", y="activity counts", title="24 hour activity time courses for each day")
 ```
 
-![](hw3_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+![](hw3_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 From the plot we can see that on the time between 8:00 to 12:00, the
 activity counts are high, espectially on Sunday. On Saturday 16:00 to
