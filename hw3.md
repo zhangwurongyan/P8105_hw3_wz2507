@@ -5,6 +5,7 @@ Wurongyan Zhang
 
 ``` r
 #load the library and data
+library(readr)
 library(tidyverse)
 library(ggridges)
 library(gridExtra)
@@ -64,10 +65,11 @@ ggplot(more,aes(x=aisle, y=n))+
 ```
 
 ![](hw3_files/figure-gfm/unnamed-chunk-3-1.png)<!-- --> Comment: The
-plot is showing aisles with more than 10,000 items being ordered with
-the number of items ordered in each aisle. We can see from the plot that
-in the aisles “fresh vegetables”, “fresh fruits” and “packaged vegetable
-fruits” are three aisles sold the most items.
+plot is showing aisles with more than 10,000 items being ordered (which
+has 39 aisles in total) with the number of items ordered in each aisle.
+We can see from the plot that in the aisles “fresh vegetables”, “fresh
+fruits” and “packaged vegetable fruits” are three aisles sold the most
+items.
 
 ``` r
 # filter those 3 aisles and get the three most popular items
@@ -95,17 +97,8 @@ pak = instacart %>%
 
 # join those 3 data sets and create a table
 all1= full_join(pak, dog)
-```
-
-    ## Joining, by = c("product_name", "n")
-
-``` r
 all = full_join(all1,bake) 
-```
 
-    ## Joining, by = c("product_name", "n")
-
-``` r
 aisle=c("packaged vegetables fruits","packaged vegetables fruits","packaged vegetables fruits","dog food care","dog food care","dog food care","baking ingredients","baking ingredients","baking ingredients")
 bind =
   as.data.frame(aisle)
@@ -131,14 +124,16 @@ as.tibble(all3)
     ## 9 baking ingredients        Cane Sugar                                  336
 
 Comment: for the aisle “baking ingredients”, the three most popular
-items are “Light Brown Sugar”, “Pure Baking Soda”, and “Cane Sugar”. For
-the aisle “dog food care”, the three most popular items are “Snack
-Sticks Chicken & Rice Recipe Dog Treats”, “Organix Chicken & Brown Rice
-Recipe”, “Small Dog Biscuits”. This aisle has the least total items sold
-compared to the other two. For the aisle “packaged vegetables fruits”,
-the three most popular items are “Organic Baby Spinach”, “Organic
-Raspberries”, “Organic Blueberries”. This aisle has the most total items
-sold compared to the other
+items are “Light Brown Sugar”, “Pure Baking Soda”, and “Cane Sugar” with
+the amount of 499, 387 and 336 respectively. For the aisle “dog food
+care”, the three most popular items are “Snack Sticks Chicken & Rice
+Recipe Dog Treats”, “Organix Chicken & Brown Rice Recipe”, “Small Dog
+Biscuits” with the amount of 30, 28 and 26 respectively. This aisle has
+the least total items sold compared to the other two. For the aisle
+“packaged vegetables fruits”, the three most popular items are
+“Organic Baby Spinach”, “Organic Raspberries”, “Organic Blueberries”
+with the amount of 9784, 5546 and 4966 respectively. This aisle has the
+most total items sold compared to the other
 two.
 
 ``` r
@@ -198,7 +193,7 @@ loc= overall %>%
   count() %>% 
   arrange(desc(n)) %>% 
   mutate(n=n/5) %>% 
-  #since for each location it measured for 5 times, so I used total n to divide 5
+  #since for each location is measured for 5 times, so I used total n to divide 5
   filter(n>=7) %>% 
   arrange(year)
   
@@ -257,6 +252,10 @@ head(excellent)
     ## 5  2002 CA               22.7
     ## 6  2002 CO               23.1
 
+Comment: The table above showing the head of the set of excellent only
+and the data includes year, state and mean\_data\_value of each state in
+each year.
+
 ``` r
 # the spaghetti plot of average value vs year for each state
 ggplot(excellent,
@@ -271,7 +270,7 @@ ggplot(excellent,
 
 Comment: We can see that the average value over time within a state
 mainly range from 15 to 30 and it does not fluctuate a lot within a
-state but there are some difference between different states. For WV in
+state but there are some differences between different states. For WV in
 2005, the average was extremely low compared to others.
 
 ``` r
@@ -311,22 +310,25 @@ chf =
   mutate(days= ifelse(day =="Saturday"|day=="Sunday", "Weekend", "Weekdays")) %>% 
   pivot_longer(
     starts_with("activity_"),
-    names_to = "activity_minutes",
+    names_to = "minutes",
     names_prefix = "activity_",
-    values_to = "activity_counts"
+    values_to = "counts"
   ) %>% 
-  mutate(activity_minutes = factor(activity_minutes, levels = c(1:1440)))
+  mutate(minutes = factor(minutes, levels = c(1:1440)))
 ```
 
-There are total 6 variables and 50400 observations after tidying the
-data. The “day” variable indicates the day of the week and the “days”
-variable indicates if it is weekdays or weekends.
+Comments: There are total 6 variables and 50400 observations after
+tidying the data. The “day” variable indicates the day of the week and
+the “days” variable indicates if it is weekdays or weekends. For other
+variables, “minutes” indicates the each minute of each day; “counts”
+indicates activities recorded in each minute; “week” indicates which
+week is the recording and “day\_id” indicates which unique day it is.
 
 ``` r
 # create table showing total activity for each day
 chf %>% 
   group_by(week, day_id, day) %>% 
-  summarise(total_activity=sum(activity_counts)) 
+  summarise(total_activity=sum(counts)) 
 ```
 
     ## # A tibble: 35 x 4
@@ -348,9 +350,9 @@ chf %>%
 ``` r
 # make a plot to see the trend
 test= chf %>% 
-  select(day_id, activity_counts,day) %>% 
+  select(day_id, counts,day) %>% 
   group_by(day_id) %>% 
-  mutate(total_activity=sum(activity_counts)) %>% 
+  mutate(total_activity=sum(counts)) %>% 
   ggplot(aes(x=as.factor(day_id), y=total_activity))+
   geom_point()
 test
@@ -358,16 +360,16 @@ test
 
 ![](hw3_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
-From the plot we can see that there are few days(day 2, day 24 and day
-31) have low total activities and most days the total activity times
-range from \[2\times10^5\ to\ 6\times10^5\]. There is no particular
-trend from my perspective.
+Comments: From the plot we can see that there are few days(day 2, day 24
+and day 31) have low total activities and most days the total activity
+times range from \[2\times10^5\ to\ 6\times10^5\]. There is no
+particular trend from my perspective.
 
 ``` r
 # make the plot showing 24-hour activity time courses for each day
 chf %>% 
-  select(activity_minutes,day_id,day,activity_counts) %>% 
-  ggplot(aes(x=activity_minutes, y=activity_counts, color=day))+
+  select(minutes,day_id,day,counts) %>% 
+  ggplot(aes(x=minutes, y=counts, color=day))+
   scale_x_discrete(breaks=seq(60,1440,60), labels=as.character(c(1:24)))+
    geom_bar(stat="identity",position = "dodge")+
   labs(x="activity hours", y="activity counts", title="24 hour activity time courses for each day")
@@ -375,11 +377,11 @@ chf %>%
 
 ![](hw3_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
-From the plot we can see that on the time between 8:00 to 12:00, the
-activity counts are high, espectially on Sunday. On Saturday 16:00 to
-17:00, the activities are high. This maybe due to people have more time
-during weekends. On Thursday 7:00, the activity is high, which means
-there might be some specific events happening on that day. Furthermore,
-between 20:00 to 22:00, the activity counts are the highest especially
-for Wednesday. However, most of the activity counts are between 0 to
-2500 for each day.
+Comments: From the plot we can see that on the time between 8:00 to
+12:00, the activity counts are high, espectially on Sunday. On Saturday
+16:00 to 17:00, the activities are high. This maybe due to people have
+more time during weekends. On Thursday 7:00, the activity is high, which
+means there might be some specific events happening on that day.
+Furthermore, between 20:00 to 22:00, the activity counts are the highest
+especially for Wednesday. However, most of the activity counts are
+between 0 to 2500 for each day.
