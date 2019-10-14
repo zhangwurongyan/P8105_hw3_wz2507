@@ -91,8 +91,9 @@ aisle=c("packaged vegetables fruits","packaged vegetables fruits","packaged vege
 bind =
   as.data.frame(aisle)
 all3=as.data.frame(c(all, bind)) %>% 
-  select(aisle,everything()) 
-as.tibble(all3)
+  select(aisle,everything()) %>% 
+  knitr::kable()
+all3
 ```
 
 Comment: for the aisle "baking ingredients", the three most popular items are "Light Brown Sugar",	"Pure Baking Soda", and "Cane Sugar" with the amount of 499, 387 and 336 respectively.
@@ -119,7 +120,8 @@ coffee = instacart %>%
   mutate(name = "Coffee Ice Cream")
 #combine those two data sets and create the table
 com = rbind(pink,coffee)
-pivot_wider(com,id_cols = name, names_from = order_dow, values_from = mean_hour)
+pivot_wider(com,id_cols = name, names_from = order_dow, values_from = mean_hour)%>%
+  knitr::kable()
 ```
 
 Comment: For pink lady apples, customers ordered mainly from 11:00 to 14:00. For coffee ice cream, customers ordered mainly from 12:00 to 15:00. We can see that those times of the day have overlaps.
@@ -155,7 +157,8 @@ loc= overall %>%
   mutate(n=n/5) %>% 
   #since for each location is measured for 5 times, so I used total n to divide 5
   filter(n>=7) %>% 
-  arrange(year)
+  arrange(year)  %>%
+  knitr::kable()
   
 loc
 ```
@@ -185,7 +188,7 @@ ggplot(excellent,
   labs(title=" average value over time within a state")
 ```
 
-Comment: We can see that the average value over time within a state mainly range from 15 to 30 and it does not fluctuate a lot within a state but there are some differences between different states. For WV in 2005, the average was extremely low compared to others.
+Comment: We can see that the average value over time within a state mainly range from 15 to 30 and it does not fluctuate a lot within a state especially for some states but there are some differences between different states. For WV in 2005, the average was extremely low compared to others. However, I think this plot is hard to distinguish each state in order to discover any trend.
 
 
 ```{r}
@@ -232,7 +235,8 @@ Comments: There are total 6 variables and 50400 observations after tidying the d
 # create table showing total activity for each day
 chf %>% 
   group_by(week, day_id, day) %>% 
-  summarise(total_activity=sum(counts)) 
+  summarise(total_activity=sum(counts)) %>%
+  knitr::kable()
 
 ```
 

@@ -103,25 +103,22 @@ aisle=c("packaged vegetables fruits","packaged vegetables fruits","packaged vege
 bind =
   as.data.frame(aisle)
 all3=as.data.frame(c(all, bind)) %>% 
-  select(aisle,everything()) 
-as.tibble(all3)
+  select(aisle,everything()) %>% 
+  knitr::kable()
+all3
 ```
 
-    ## Warning: `as.tibble()` is deprecated, use `as_tibble()` (but mind the new semantics).
-    ## This warning is displayed once per session.
-
-    ## # A tibble: 9 x 3
-    ##   aisle                     product_name                                  n
-    ##   <fct>                     <fct>                                     <int>
-    ## 1 packaged vegetables frui… Organic Baby Spinach                       9784
-    ## 2 packaged vegetables frui… Organic Raspberries                        5546
-    ## 3 packaged vegetables frui… Organic Blueberries                        4966
-    ## 4 dog food care             Snack Sticks Chicken & Rice Recipe Dog T…    30
-    ## 5 dog food care             Organix Chicken & Brown Rice Recipe          28
-    ## 6 dog food care             Small Dog Biscuits                           26
-    ## 7 baking ingredients        Light Brown Sugar                           499
-    ## 8 baking ingredients        Pure Baking Soda                            387
-    ## 9 baking ingredients        Cane Sugar                                  336
+| aisle                      | product\_name                                 |    n |
+| :------------------------- | :-------------------------------------------- | ---: |
+| packaged vegetables fruits | Organic Baby Spinach                          | 9784 |
+| packaged vegetables fruits | Organic Raspberries                           | 5546 |
+| packaged vegetables fruits | Organic Blueberries                           | 4966 |
+| dog food care              | Snack Sticks Chicken & Rice Recipe Dog Treats |   30 |
+| dog food care              | Organix Chicken & Brown Rice Recipe           |   28 |
+| dog food care              | Small Dog Biscuits                            |   26 |
+| baking ingredients         | Light Brown Sugar                             |  499 |
+| baking ingredients         | Pure Baking Soda                              |  387 |
+| baking ingredients         | Cane Sugar                                    |  336 |
 
 Comment: for the aisle “baking ingredients”, the three most popular
 items are “Light Brown Sugar”, “Pure Baking Soda”, and “Cane Sugar” with
@@ -154,14 +151,14 @@ coffee = instacart %>%
   mutate(name = "Coffee Ice Cream")
 #combine those two data sets and create the table
 com = rbind(pink,coffee)
-pivot_wider(com,id_cols = name, names_from = order_dow, values_from = mean_hour)
+pivot_wider(com,id_cols = name, names_from = order_dow, values_from = mean_hour)%>%
+  knitr::kable()
 ```
 
-    ## # A tibble: 2 x 8
-    ##   name               `0`   `1`   `2`   `3`   `4`   `5`   `6`
-    ##   <chr>            <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
-    ## 1 Pink Lady Apples  13.2  11.4  12.1  14.0  12    12.8  12.1
-    ## 2 Coffee Ice Cream  13.5  13.7  15.3  15.3  14.8  12.2  13.9
+| name             |        0 |        1 |        2 |        3 |    4 |        5 |        6 |
+| :--------------- | -------: | -------: | -------: | -------: | ---: | -------: | -------: |
+| Pink Lady Apples | 13.15000 | 11.38889 | 12.06000 | 14.02703 | 12.0 | 12.80000 | 12.10526 |
+| Coffee Ice Cream | 13.48571 | 13.72727 | 15.29167 | 15.31818 | 14.8 | 12.22727 | 13.92105 |
 
 Comment: For pink lady apples, customers ordered mainly from 11:00 to
 14:00. For coffee ice cream, customers ordered mainly from 12:00 to
@@ -195,35 +192,34 @@ loc= overall %>%
   mutate(n=n/5) %>% 
   #since for each location is measured for 5 times, so I used total n to divide 5
   filter(n>=7) %>% 
-  arrange(year)
+  arrange(year)  %>%
+  knitr::kable()
   
 loc
 ```
 
-    ## # A tibble: 20 x 3
-    ## # Groups:   year, locationabbr [20]
-    ##     year locationabbr     n
-    ##    <int> <chr>        <dbl>
-    ##  1  2002 PA              10
-    ##  2  2002 MA               8
-    ##  3  2002 NJ               8
-    ##  4  2002 CT               7
-    ##  5  2002 FL               7
-    ##  6  2002 NC               7
-    ##  7  2010 FL              41
-    ##  8  2010 NJ              19
-    ##  9  2010 TX              16
-    ## 10  2010 CA              12
-    ## 11  2010 MD              12
-    ## 12  2010 NC              12
-    ## 13  2010 NE              10
-    ## 14  2010 WA              10
-    ## 15  2010 MA               9
-    ## 16  2010 NY               9
-    ## 17  2010 OH               8
-    ## 18  2010 CO               7
-    ## 19  2010 PA               7
-    ## 20  2010 SC               7
+| year | locationabbr |  n |
+| ---: | :----------- | -: |
+| 2002 | PA           | 10 |
+| 2002 | MA           |  8 |
+| 2002 | NJ           |  8 |
+| 2002 | CT           |  7 |
+| 2002 | FL           |  7 |
+| 2002 | NC           |  7 |
+| 2010 | FL           | 41 |
+| 2010 | NJ           | 19 |
+| 2010 | TX           | 16 |
+| 2010 | CA           | 12 |
+| 2010 | MD           | 12 |
+| 2010 | NC           | 12 |
+| 2010 | NE           | 10 |
+| 2010 | WA           | 10 |
+| 2010 | MA           |  9 |
+| 2010 | NY           |  9 |
+| 2010 | OH           |  8 |
+| 2010 | CO           |  7 |
+| 2010 | PA           |  7 |
+| 2010 | SC           |  7 |
 
 Comment: There are total 6 states were observed at 7 or more locations
 in 2002. Also, there are total 14 states were observed at 7 or more
@@ -270,8 +266,10 @@ ggplot(excellent,
 
 Comment: We can see that the average value over time within a state
 mainly range from 15 to 30 and it does not fluctuate a lot within a
-state but there are some differences between different states. For WV in
-2005, the average was extremely low compared to others.
+state especially for some states but there are some differences between
+different states. For WV in 2005, the average was extremely low compared
+to others. However, I think this plot is hard to distinguish each state
+in order to discover any trend.
 
 ``` r
 # filter data for NY in 2006 and 2010
@@ -328,24 +326,47 @@ week is the recording and “day\_id” indicates which unique day it is.
 # create table showing total activity for each day
 chf %>% 
   group_by(week, day_id, day) %>% 
-  summarise(total_activity=sum(counts)) 
+  summarise(total_activity=sum(counts)) %>%
+  knitr::kable()
 ```
 
-    ## # A tibble: 35 x 4
-    ## # Groups:   week, day_id [35]
-    ##     week day_id day       total_activity
-    ##    <dbl>  <dbl> <chr>              <dbl>
-    ##  1     1      1 Friday           480543.
-    ##  2     1      2 Monday            78828.
-    ##  3     1      3 Saturday         376254 
-    ##  4     1      4 Sunday           631105 
-    ##  5     1      5 Thursday         355924.
-    ##  6     1      6 Tuesday          307094.
-    ##  7     1      7 Wednesday        340115.
-    ##  8     2      8 Friday           568839 
-    ##  9     2      9 Monday           295431 
-    ## 10     2     10 Saturday         607175 
-    ## # … with 25 more rows
+| week | day\_id | day       | total\_activity |
+| ---: | ------: | :-------- | --------------: |
+|    1 |       1 | Friday    |       480542.62 |
+|    1 |       2 | Monday    |        78828.07 |
+|    1 |       3 | Saturday  |       376254.00 |
+|    1 |       4 | Sunday    |       631105.00 |
+|    1 |       5 | Thursday  |       355923.64 |
+|    1 |       6 | Tuesday   |       307094.24 |
+|    1 |       7 | Wednesday |       340115.01 |
+|    2 |       8 | Friday    |       568839.00 |
+|    2 |       9 | Monday    |       295431.00 |
+|    2 |      10 | Saturday  |       607175.00 |
+|    2 |      11 | Sunday    |       422018.00 |
+|    2 |      12 | Thursday  |       474048.00 |
+|    2 |      13 | Tuesday   |       423245.00 |
+|    2 |      14 | Wednesday |       440962.00 |
+|    3 |      15 | Friday    |       467420.00 |
+|    3 |      16 | Monday    |       685910.00 |
+|    3 |      17 | Saturday  |       382928.00 |
+|    3 |      18 | Sunday    |       467052.00 |
+|    3 |      19 | Thursday  |       371230.00 |
+|    3 |      20 | Tuesday   |       381507.00 |
+|    3 |      21 | Wednesday |       468869.00 |
+|    4 |      22 | Friday    |       154049.00 |
+|    4 |      23 | Monday    |       409450.00 |
+|    4 |      24 | Saturday  |         1440.00 |
+|    4 |      25 | Sunday    |       260617.00 |
+|    4 |      26 | Thursday  |       340291.00 |
+|    4 |      27 | Tuesday   |       319568.00 |
+|    4 |      28 | Wednesday |       434460.00 |
+|    5 |      29 | Friday    |       620860.00 |
+|    5 |      30 | Monday    |       389080.00 |
+|    5 |      31 | Saturday  |         1440.00 |
+|    5 |      32 | Sunday    |       138421.00 |
+|    5 |      33 | Thursday  |       549658.00 |
+|    5 |      34 | Tuesday   |       367824.00 |
+|    5 |      35 | Wednesday |       445366.00 |
 
 ``` r
 # make a plot to see the trend
